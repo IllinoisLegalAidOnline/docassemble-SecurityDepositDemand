@@ -2,6 +2,8 @@ metadata:
   title: Security deposit demand letter
   short title: Security deposit demand letter
   comment: This program creates a letter asking a landlord to return your security deposit.
+  authors:
+    - Matt Newsted
 ---
 include:
   - docassemble.AssemblyLine:assembly_line.yml
@@ -9,44 +11,39 @@ include:
   - docassemble.ILAO:shared-basic-questions.yml
 ---
 objects:
-  - rental_property: Address
-  - mailing_address: Address
+  - rental_property: ALAddress
+  - mailing_address: ALAddress
 ---
-terms: 
-  - "section :question-circle:": |
-      Sections can be on the side or top of your screen. "About the landlord" is an example.
+code: |
+  ilao_easy_form_title = "Security deposit demand letter"
+  ilao_easy_form_url = "https://www.illinoislegalaid.org/legal-information/security-deposit-demand-letter"
+  github_user = 'IllinoisLegalAidOnline'
+  github_repo_name = 'docassemble-SecurityDepositDemand'
 ---
 # Road map
 sections:
-  - review_answers: Review your answers
-#  - section_intro: Start
-#  - section_qualify: Do you qualify?
-#  - section_property: About the property and security deposit
-#  - section_landlord: About the landlord
-#  - section_letter: About your letter
-#  - section_preview: Preview
-#  - section_download: Download
+  - section_intro: Start
+  - section_property: Property and security deposit info
+  - section_landlord: Landlord info
+  - section_letter: About you and letter date
+  - section_download: Download
 ---
 # interview order block
 mandatory: True
 code: |
-  ilao_easy_form_title = "Security deposit demand letter"
-  ilao_easy_form_url = "https://www.illinoislegalaid.org/legal-information/security-deposit-demand-letter"
   #nav.set_section('section_intro')
   sees_nav_bar
   set_progress(5)
   how_to_use
-  if accept == False:
-    not_legal_advice
-  #nav.set_section('section_qualify')
+  accept_terms
   set_progress(20)
   if moved_out == False:
     not_moved_out
+  nav.set_section('section_property')
   move_out_date
   if move_out_date.plus(days=45) > today():
     wait_45_days
-  qualified
-  #nav.set_section('section_property')
+  #qualified
   set_progress(30)
   rental_property.address
   if rental_property.state != 'IL':
@@ -58,7 +55,9 @@ code: |
     deposit_returned_amount
     if deposit_balance == 0:
       no_balance_owed
-  #nav.set_section('section_landlord')
+      
+  set_progress(60)
+  nav.set_section('section_landlord')
   if landlord_type == 'Person':
     landlord_person_name
   else:
@@ -67,19 +66,15 @@ code: |
       property_manager.name.first
   landlord.address.address
   set_progress(75)
-  #nav.set_section('section_letter')
+  nav.set_section('section_letter')
   user.name.first
-  letter_date
-  set_progress(95)
   mailing_address.address
-  #nav.set_section('section_preview')
-  #preview_form
+  set_progress(95)
+  letter_date
   set_progress(100)
-  #nav.set_section('section_download')
+  nav.set_section('section_download')
   get_docs_screen
-  #user.email
-  #if email_sent_ok == True:
-  #  ending_screen
+
 ---
 id: welcome
 question: |
@@ -95,7 +90,7 @@ subquestion: |
   * The number of rental units in the property, and
   * The terms of the lease.
 
-  Learn more about [getting back a security deposit](https://www.illinoislegalaid.org/legal-information/getting-back-security-deposit).
+  Learn more about [**getting back a security deposit**](https://www.illinoislegalaid.org/legal-information/getting-back-security-deposit).
 field: sees_nav_bar
 ---
 id: instructions
@@ -110,49 +105,58 @@ subquestion: |
   * The landlord name and address, and
   * The amount of security deposit you paid and how much was returned, if any.
 
-  Set aside :stopwatch: 5 to 10 minutes to finish this program. You can login and save your work to return to later. 
+  Set aside 5 to 10 minutes to finish this program. You can log in and save your work to return to later. 
 
-  Click on **{green words :question-circle:}** to learn what they mean. Click **"Help"** to learn more about a question.
+  ${ collapse_template(help_example) }  
+
+  Click on **{green words}** to learn what they mean. Some questions have a question mark in a circle ${ fa_icon("question-circle", color_css="#0dcaf0" ) } that also gives help.
 
   After you download your letter, you must mail it to your landlord.
-help: |
-  This is an example help page. Click **"Back to question"** to go to the previous screen and continue the interview.
+---
+template: help_example
+subject: |
+  **You can expand sections like this to show more information.**
+content: |  
+  This is an example of help. Click again to hide.
 ---
 id: accept terms
 question: |
-  Not legal advice
+  Terms of use
 subquestion: |
-  NOTE: This program does not provide legal advice. It does not take the place of advice from a lawyer.
+  This program does not provide legal advice. It does not take the place of advice from a lawyer.
 
   Using this program does not create an attorney-client relationship between you and Illinois Legal Aid Online or its employees.
 
-  Do you understand and accept the [terms of use](https://www.illinoislegalaid.org/about/terms-of-use)? 
-field: accept
-choices:
-  - I understand and accept the terms of use.: True
-  - I do not accept the terms of use.: False
+  ${ collapse_template(get_legal_help) }  
+
+fields:
+  - To continue, you must accept the [**terms of use**](https://www.illinoislegalaid.org/about/terms-of-use).: accept
+    datatype: checkboxes
+    none of the above: False
+    minlength: 1
+    choices:
+      - I accept the terms of use.
+    validation messages:
+      minlength: |
+        You cannot continue unless you agree to the terms of use. 
+continue button field: accept_terms
 ---
-id: not legal advice
-event: not_legal_advice
-question: |
-  Sorry
-subquestion: |
-  You cannot continue unless you understand this program does not give legal advice and accept the [terms of use](https://www.illinoislegalaid.org/about/terms-of-use).
-
-  This program will only help you complete the legal documents you want. By providing this program we are not giving you legal advice. Your use of this program does not mean that Illinois Legal Aid Online will provide you with a lawyer or with any individual legal help.
-
-  If you have questions or concerns about your legal problem and want legal advice you should talk to a lawyer. If you would like help finding free or low-cost legal services in your area, use [Get Legal Help](https://www.illinoislegalaid.org/get-legal-help).
-
-buttons:
-  - Exit: exit
-  - Restart: restart
+template: get_legal_help
+subject: |
+  **What if I need legal advice?**
+content: |  
+  If you have questions or concerns about your legal problem and want legal advice you should talk to a lawyer.
+  
+  Use [**Get Legal Help**](https://www.illinoislegalaid.org/get-legal-help) to find free or low-cost legal services in your area.
 ---
 id: moved out
 question: |
   Have you moved out of the rental property?
 subquestion: |
   This means moving all your belongings out. 
-yesno: moved_out
+fields:
+  - no label: moved_out
+    datatype: yesnoradio
 ---
 id: not moved out
 event: not_moved_out
@@ -181,7 +185,7 @@ subquestion: |
 
   You may want to wait until ${ move_out_date.plus(days=45) }, to see if your landlord returns your security deposit. In some areas, waiting 45 days is required.
 
-  [Learn more about security deposits](https://www.illinoislegalaid.org/legal-information/getting-or-returning-security-deposit). 
+  [**Learn more about security deposits**](https://www.illinoislegalaid.org/legal-information/getting-or-returning-security-deposit). 
 ---
 id: rental property address
 question: |
@@ -232,12 +236,14 @@ subquestion: |
 
   Also, landlords can take money out of the security deposit for property damage. In some cases, they can take out money for unpaid rent, too.
 
-  [Learn more about security deposits](https://www.illinoislegalaid.org/legal-information/getting-or-returning-security-deposit).
+  [**Learn more about security deposits**](https://www.illinoislegalaid.org/legal-information/getting-or-returning-security-deposit).
 ---
 id: security deposit returned
 question: |
   Has the landlord returned any of your security deposit?
-yesno: deposit_returned
+fields:
+  - no label: deposit_returned
+    datatype: yesnoradio
 ---
 id: security deposit returned amount
 question: |
@@ -263,14 +269,14 @@ buttons:
 id: landlord type
 question: |
   Was your landlord a person or a company?
+subquestion: |
+  If your landlord was a company, but you worked with a person like a property manager, pick **Company**. You can enter the person's name later.
 fields:
   - Landlord: landlord_type
     input type: radio
     choices:
       - Person
       - Company
-help: |
-  If your landlord was a company, but you worked with a person like a property manager, pick Company. You can enter the person's name later.
 ---
 depends on: landlord_type
 # clear unused variables for review/display
@@ -318,7 +324,9 @@ question: |
   Does ${ landlord } have a property manager?
 subquestion: |
   This could be the person who collected rent or signed your lease.
-yesno: landlord_has_agent
+fields:
+  - no label: landlord_has_agent
+    datatype: yesnoradio
 ---
 id: landlord agent name
 question: |
@@ -351,15 +359,15 @@ fields:
   - ZIP code: landlord.address.zip
     required: False
 ---
-id: qualified
-continue button field: qualified
-question: |
-  Good news!
-subquestion: |
-  You are qualified to use this program.
-
-  The next questions will ask for information that will go into your letter.
----
+#id: qualified
+#continue button field: qualified
+#question: |
+#  Good news!
+#subquestion: |
+#  You are qualified to use this program.
+#
+#  The next questions will ask for information that will go into your letter.
+#---
 id: mail letter date
 question: |
   When will you mail your letter?
@@ -386,22 +394,6 @@ fields:
     default: IL      
   - ZIP code: mailing_address.zip
 ---
-#id: preview
-#continue button field: preview_form
-#reconsider:
-#  - letter
-##  - form['preview']
-#question: |
-#  Preview
-#subquestion: |
-#  Great job! Your forms are almost ready.
-#
-#  Click the picture of your forms to preview in a new window.
-#  
-#  You can click **"Back"** to make changes, or click a **{section :question-circle:}** to edit your answers.
-#  
-#  ${ pdf_concatenate(whats_next, letter, filename="security_deposit_demand.pdf") }
----
 attachment:
   name: Security deposit demand letter
   variable name: form[i]
@@ -412,9 +404,7 @@ attachment:
     - docx
 ---
 id: get docs screen
-#continue button field: get_docs_screen
 event: get_docs_screen
-#reconsider: letter
 question: |
   Download
 subquestion: |
@@ -422,7 +412,7 @@ subquestion: |
 
   1. Sign it,
   2. Make a copy, and 
-  3. Send it by **{Certified Mail :question-circle:}**.
+  3. Send it by **{Certified Mail}**.
 
   ${ action_button_html(url_action('review_answers'), label=':edit: Make changes', color='success', size="md") }
 
@@ -435,20 +425,11 @@ subquestion: |
   Thank you for using ILAO Easy Forms!
 under: |
   % if not user_logged_in():
-  [${fa_icon("sign-in-alt", color="#0079d0", size="sm")} Sign-in](${url_of('login', next=interview_url())}) or [register](${url_of('register', next=interview_url())}) an ILAO Easy Form account to save your progress (optional).
+  [${fa_icon("sign-in-alt", color="#0079d0", size="sm")} Sign-in](${url_of('login', next=interview_url())}) or [create](${url_of('register', next=interview_url())}) an ILAO Easy Form account to save your progress (optional).
   % endif 
 
   &nbsp;
   ${ action_button_html(interview_url(i="docassemble.ILAO:feedback.yml", easy_form_interview=ilao_easy_form_url, easy_form_title=ilao_easy_form_title, easy_form_page=user_info().question_id, easy_form_variable=user_info().variable, local=False,reset=1), label=':comment: Was this program helpful?', color="#181c36", size="md", new_window=True) }
-
-#  Download your forms
-#  
-#  ${ docs_list([ { "label": 'Instructions', "doc": whats_next } , { "label": 'Security deposit demand letter', "doc": letter } ]) } 
-#
-#css: ${ docs_list_css() }
-#field: get_docs_screen
-#buttons:
-#  - ${fa_icon("envelope", color="#0079d0", size="sm")} Email your forms: continue
 ---
 objects:
   - instructions: ALDocument.using(title="Instructions", filename="instructions", enabled=True, has_addendum=False)
@@ -503,24 +484,7 @@ content: |
   
   [Illinois Legal Aid Online](https://www.illinoislegalaid.org)
 ---
-#code: |
-#  email_sent_ok = send_email(to=user.email, template=forms_email, attachments=[letter, whats_next])
-#---
-#id: email ending screen
-#event: ending_screen
-#question: |
-#  Email sent
-#subquestion: |
-#  Your forms were sent to **${ user.email }**.
-#  
-#  If you don’t see an email from no-reply@illinoislegalaid.org, check your spam folder.
-#  
-#  This program does not deliver your letter to the landlord. You need to mail it yourself.
-#  
-#  Thank you for using ILAO Easy Forms!
-#buttons:
-#  - Delete answers and restart: restart
-#  - Exit: exit
+
 ############### Review pages  
 ---
 id: review screen
@@ -530,60 +494,69 @@ question: |
 subquestion: |
   Edit your answers below.
 review:
-  - Edit name: user.name.first
+  - Edit: user.name.first
     button: |
-      You said your name is ${user.name.full(middle="full")}.
-  - Edit address: mailing_address.address
+      **Your name:**
+      ${user.name.full(middle="full")}
+  - Edit: mailing_address.address
     button: |
-      You said your mailing address is
-      
-      ${mailing_address}.
-  - Edit send date: letter_date
+      **Your mailing address:**
+      ${mailing_address.on_one_line(bare=True)}
+  - Edit: letter_date
     button: |
-      You said you will send the letter on ${format_date(letter_date)}.
-  - Edit landlord type: landlord_type
+      **Letter date:**
+      ${format_date(letter_date)}
+  - Edit: landlord_type
     button: |
-	    You said the landlord is a ${landlord_type}.
-  - Edit landlord name: landlord_person_name
+	    **Landlord type:**
+      ${landlord_type}
+  - Edit: landlord_person_name
     button: |
-	    You said the landlord is ${landlord.name.full(middle="full")}.
+	    **Landlord name:**
+      ${landlord.name.full(middle="full")}
     show if: landlord_type == "Person"
-  - Edit landlord name: landlord_company_name
+  - Edit: landlord_company_name
     button: |
-	    You said the landlord is ${landlord.name.first}.
+	    **Landlord name:**
+      ${landlord.name.first}
     show if: landlord_type == "Company"
-  - Edit property manager: landlord_has_agent
+  - Edit: landlord_has_agent
     button: |
-      % if landlord_has_agent == True:
-        You said the landlord has a property manager.
-      % else:
-        You said the landlord does not have a property manager.
-      % endif
+      **Does the landlord have a property manager?**
+      ${ word(yesno(landlord_has_agent)) }
     show if: landlord_type == "Company"
-  - Edit manager name: property_manager.name.first
+  - Edit: property_manager.name.first
     button: |
-	    You said the property manager is ${property_manager.name.full(middle="full")}.
+	    **Property manager name:**
+	    ${property_manager.name.full(middle="full")}
     show if: landlord_has_agent and landlord_type == "Company"
-  - Edit address: landlord.address.address
+  - Edit: landlord.address.address
     button: |
-      You said the landlord address is
-      
-      ${landlord.address}.
-  - Edit address: rental_property.address
+      **Landlord address:**
+      ${landlord.address.on_one_line(bare=True)}
+  - Edit: rental_property.address
     button: |
-      You said the rental property address is
-      
-      ${rental_property}.
-  - Edit move out date: move_out_date
+      **Rental property address:**
+      ${rental_property.on_one_line(bare=True)}
+  - Edit: move_out_date
     button: |
-      You said you moved out on ${format_date(move_out_date)}.
-  - Edit deposit: deposit_amount
+      **Move out date:**
+      ${format_date(move_out_date)}
+  - Edit: deposit_amount
     button: |
-      You said your security deposit was ${currency(deposit_amount)}.
-  - Edit return: deposit_returned_amount
+      **Security deposit paid:**
+      ${currency(deposit_amount)}
+  - Edit: deposit_returned_amount
     button: |
-      You said your landlord returned ${currency(deposit_returned_amount)}.
+      **Security deposit returned so far:**
+      ${currency(deposit_returned_amount)}
 #---
+#  To do: reorganize the full review page, set up section review screens
+#  - section_property: Property and security deposit info
+#  - section_landlord: Landlord info
+#  - section_letter: About you and letter date
+#
+#
 #id: section_letter
 #event: section_letter
 #question: |
