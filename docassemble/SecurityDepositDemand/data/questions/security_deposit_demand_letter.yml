@@ -23,7 +23,7 @@ code: |
 # Road map
 sections:
   - section_intro: Start
-  - section_property: Property and security deposit info
+  - section_property: Property and security deposit
   - section_landlord: Landlord info
   - section_letter: About you and letter date
   - section_download: Download
@@ -293,10 +293,6 @@ code: |
     undefine(property_manager)
   if landlord_type == 'Person':
     undefine(landlord_has_agent)
-    #property_manager.name.first = ""
-    #property_manager.name.middle = ""
-    #property_manager.name.last = ""
-    #property_manager.name.suffix = ""
 ---
 id: landlord name person
 continue button field: landlord_person_name
@@ -359,15 +355,6 @@ fields:
   - ZIP code: landlord.address.zip
     required: False
 ---
-#id: qualified
-#continue button field: qualified
-#question: |
-#  Good news!
-#subquestion: |
-#  You are qualified to use this program.
-#
-#  The next questions will ask for information that will go into your letter.
-#---
 id: mail letter date
 question: |
   When will you mail your letter?
@@ -494,18 +481,22 @@ question: |
 subquestion: |
   Edit your answers below.
 review:
-  - Edit: user.name.first
+  - Edit: rental_property.address
     button: |
-      **Your name:**
-      ${user.name.full(middle="full")}
-  - Edit: mailing_address.address
+      **Rental property address:**
+      ${rental_property.on_one_line(bare=True)}
+  - Edit: move_out_date
     button: |
-      **Your mailing address:**
-      ${mailing_address.on_one_line(bare=True)}
-  - Edit: letter_date
+      **Move out date:**
+      ${format_date(move_out_date)}
+  - Edit: deposit_amount
     button: |
-      **Letter date:**
-      ${format_date(letter_date)}
+      **Security deposit paid:**
+      ${currency(deposit_amount)}
+  - Edit: deposit_returned_amount
+    button: |
+      **Security deposit returned so far:**
+      ${currency(deposit_returned_amount)}
   - Edit: landlord_type
     button: |
 	    **Landlord type:**
@@ -534,6 +525,83 @@ review:
     button: |
       **Landlord address:**
       ${landlord.address.on_one_line(bare=True)}
+  - Edit: user.name.first
+    button: |
+      **Your name:**
+      ${user.name.full(middle="full")}
+  - Edit: mailing_address.address
+    button: |
+      **Your mailing address:**
+      ${mailing_address.on_one_line(bare=True)}
+  - Edit: letter_date
+    button: |
+      **Letter date:**
+      ${format_date(letter_date)}
+
+---
+id: section_letter
+event: section_letter
+question: |
+  About you and letter date
+subquestion: |
+  Click below to edit your answers.
+review:
+  - Edit: user.name.first
+    button: |
+      **Your name:**
+      ${user.name.full(middle="full")}
+  - Edit: mailing_address.address
+    button: |
+      **Your mailing address:**
+      ${mailing_address.on_one_line(bare=True)}
+  - Edit: letter_date
+    button: |
+      **Letter date:**
+      ${format_date(letter_date)}
+---
+id: section_landlord
+event: section_landlord
+question: |
+  Landlord info
+subquestion: |
+  Click below to edit your answers.
+review:
+  - Edit: landlord_type
+    button: |
+	    **Landlord type:**
+      ${landlord_type}
+  - Edit: landlord_person_name
+    button: |
+	    **Landlord name:**
+      ${landlord.name.full(middle="full")}
+    show if: landlord_type == "Person"
+  - Edit: landlord_company_name
+    button: |
+	    **Landlord name:**
+      ${landlord.name.first}
+    show if: landlord_type == "Company"
+  - Edit: landlord_has_agent
+    button: |
+      **Does the landlord have a property manager?**
+      ${ word(yesno(landlord_has_agent)) }
+    show if: landlord_type == "Company"
+  - Edit: property_manager.name.first
+    button: |
+	    **Property manager name:**
+	    ${property_manager.name.full(middle="full")}
+    show if: landlord_has_agent and landlord_type == "Company"
+  - Edit: landlord.address.address
+    button: |
+      **Landlord address:**
+      ${landlord.address.on_one_line(bare=True)}
+---
+id: section_property
+event: section_property
+question: |
+  Property and security deposit
+subquestion: |
+  Click below to edit your answers.
+review:
   - Edit: rental_property.address
     button: |
       **Rental property address:**
@@ -550,86 +618,3 @@ review:
     button: |
       **Security deposit returned so far:**
       ${currency(deposit_returned_amount)}
-#---
-#  To do: reorganize the full review page, set up section review screens
-#  - section_property: Property and security deposit info
-#  - section_landlord: Landlord info
-#  - section_letter: About you and letter date
-#
-#
-#id: section_letter
-#event: section_letter
-#question: |
-#  About your letter
-#subquestion: |
-#  Click below to edit your answers.
-#review:
-#  - Edit name: user.name.first
-#    button: |
-#      You said your name is ${user.name.full(middle="full")}.
-#  - Edit address: mailing_address.address
-#    button: |
-#      You said your mailing address is
-#      
-#      ${mailing_address}.
-#  - Edit send date: letter_date
-#    button: |
-#      You said you will send the letter on ${format_date(letter_date)}.
-#---
-#id: section_landlord
-#event: section_landlord
-#question: |
-#  About the landlord
-#subquestion: |
-#  Click below to edit your answers.
-#review:
-#  - Edit landlord type: landlord_type
-#    button: |
-#	    You said the landlord is a ${landlord_type}.
-#  - Edit landlord name: landlord_person_name
-#    button: |
-#	    You said the landlord is ${landlord.name.full(middle="full")}.
-#    show if: landlord_type == "Person"
-#  - Edit landlord name: landlord_company_name
-#    button: |
-#	    You said the landlord is ${landlord.name.first}.
-#    show if: landlord_type == "Company"
-#  - Edit property manager: landlord_has_agent
-#    button: |
-#      % if landlord_has_agent == True:
-#        You said the landlord has a property manager.
-#      % else:
-#        You said the landlord does not have a property manager.
-#      % endif
-#    show if: landlord_type == "Company"
-#  - Edit manager name: property_manager.name.first
-#    button: |
-#	    You said the property manager is ${property_manager.name.full(middle="full")}.
-#    show if: landlord_has_agent and landlord_type == "Company"
-#  - Edit address: landlord.address.address
-#    button: |
-#      You said the landlord address is
-#      
-#      ${landlord.address}.
-#---
-#id: section_property
-#event: section_property
-#question: |
-#  Property and security deposit
-#subquestion: |
-#  Click below to edit your answers.
-#review:
-#  - Edit address: rental_property.address
-#    button: |
-#      You said the rental property address is
-#      
-#      ${rental_property}.
-#  - Edit move out date: move_out_date
-#    button: |
-#      You said you moved out on ${format_date(move_out_date)}.
-#  - Edit deposit: deposit_amount
-#    button: |
-#      You said your security deposit was ${currency(deposit_amount)}.
-#  - Edit return: deposit_returned_amount
-#    button: |
-#      You said your landlord returned ${currency(deposit_returned_amount)}.
