@@ -449,29 +449,6 @@ content: |
   
   [Illinois Legal Aid Online](https://www.illinoislegalaid.org)
 ---
-id: email forms
-question: |
-  Email your forms
-subquestion: |
-  Where should we email your forms?
-  
-  This program does not deliver your letter to the landlord. You need to mail it yourself.
-fields:
-  - Email address: user.email
-    datatype: email
-continue button label: Send
----
-template: forms_email
-subject: |
-  Security deposit demand letter
-content: |
-  Your forms are attached.
-  
-  Thanks for using ILAO Easy Forms!
-  
-  [Illinois Legal Aid Online](https://www.illinoislegalaid.org)
----
-
 ############### Review pages  
 ---
 id: review screen
@@ -539,7 +516,7 @@ review:
       ${format_date(letter_date)}
 
 ---
-id: section_letter
+id: about you and letter date review screen
 event: section_letter
 question: |
   About you and letter date
@@ -559,7 +536,7 @@ review:
       **Letter date:**
       ${format_date(letter_date)}
 ---
-id: section_landlord
+id: landlord info review screen
 event: section_landlord
 question: |
   Landlord info
@@ -595,7 +572,7 @@ review:
       **Landlord address:**
       ${landlord.address.on_one_line(bare=True)}
 ---
-id: section_property
+id: property and security deposit review screen
 event: section_property
 question: |
   Property and security deposit
