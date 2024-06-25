@@ -33,6 +33,7 @@ mandatory: True
 code: |
   #nav.set_section('section_intro')
   sees_nav_bar
+  snapshot_start
   set_progress(5)
   how_to_use
   accept_terms
@@ -73,8 +74,37 @@ code: |
   letter_date
   set_progress(100)
   nav.set_section('section_download')
+  forms_assembling
+  snapshot_forms
   get_docs_screen
+---
+code: |
+  stuff_to_snapshot = {
+  	'start_time': str(current_datetime().format_datetime()),
+  	'started_interview': True, 
+  	}
 
+  try:
+    stuff_to_snapshot['ip_address'] = device(ip=True)
+  except:
+    pass
+
+  stuff_to_snapshot['zip'] = showifdef('mailing_address.zip')
+
+  stuff_to_snapshot['downloaded_forms'] = showifdef('forms_assembling')
+  
+  store_variables_snapshot(
+  	data=stuff_to_snapshot, persistent=True
+  	)
+  snapshot_interview_state = True
+---
+code: |
+  snapshot_interview_state
+  snapshot_start = True  
+---
+code: |
+  reconsider('snapshot_interview_state')
+  snapshot_forms = True
 ---
 id: welcome
 question: |
@@ -109,13 +139,13 @@ subquestion: |
 
   ${ collapse_template(help_example) }  
 
-  Click on **{green words}** to learn what they mean. Some questions have a question mark in a circle ${ fa_icon("question-circle", color_css="#0dcaf0" ) } that also gives help.
+  Click on **{green words}** to learn what they mean. Some pages have a question mark in a circle ${ fa_icon("question-circle", color_css="#0dcaf0" ) } that helps explain things.
 
   After you download your letter, you must mail it to your landlord.
 ---
 template: help_example
 subject: |
-  **You can expand sections like this to show more information.**
+  **You can click sections like this to show more information.**
 content: |  
   This is an example of help. Click again to hide.
 ---
@@ -381,14 +411,16 @@ fields:
     default: IL      
   - ZIP code: mailing_address.zip
 ---
-attachment:
-  name: Security deposit demand letter
-  variable name: form[i]
-  filename: security_deposit_demand
-  docx template file: security_deposit_demand.docx
-  valid formats:
-    - pdf
-    - docx
+id: forms assembling
+continue button field: forms_assembling
+question: |
+  Almost done
+subquestion: |
+  After you click **Next**, it may take a few moments to finish making your forms.
+  
+  ###### You do not need to refresh your screen. Hang in there!
+  
+  [NEWLINE]
 ---
 id: get docs screen
 event: get_docs_screen
@@ -517,6 +549,7 @@ review:
 
 ---
 id: about you and letter date review screen
+section: About you and letter date
 event: section_letter
 question: |
   About you and letter date
@@ -537,6 +570,7 @@ review:
       ${format_date(letter_date)}
 ---
 id: landlord info review screen
+section: Landlord info
 event: section_landlord
 question: |
   Landlord info
@@ -573,6 +607,7 @@ review:
       ${landlord.address.on_one_line(bare=True)}
 ---
 id: property and security deposit review screen
+section: Property and security deposit
 event: section_property
 question: |
   Property and security deposit
