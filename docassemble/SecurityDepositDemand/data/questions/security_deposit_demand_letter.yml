@@ -531,7 +531,7 @@ review:
   - Edit: landlord_person_name
     button: |
 	    **Landlord name:**
-      ${landlord.name.full(middle="full")}
+      ${landlord.name_full()}
     show if: landlord_type == "Person"
   - Edit: landlord_company_name
     button: |
@@ -546,7 +546,7 @@ review:
   - Edit: property_manager.name.first
     button: |
 	    **Property manager name:**
-	    ${property_manager.name.full(middle="full")}
+	    ${property_manager.name_full()}
     show if: landlord_has_agent and landlord_type == "Company"
   - Edit: landlord.address.address
     button: |
@@ -555,7 +555,7 @@ review:
   - Edit: user.name.first
     button: |
       **Your name:**
-      ${user.name.full(middle="full")}
+      ${user.name_full()}
   - Edit: mailing_address.address
     button: |
       **Your mailing address:**
@@ -577,7 +577,7 @@ review:
   - Edit: user.name.first
     button: |
       **Your name:**
-      ${user.name.full(middle="full")}
+      ${user.name_full()}
   - Edit: mailing_address.address
     button: |
       **Your mailing address:**
@@ -602,7 +602,7 @@ review:
   - Edit: landlord_person_name
     button: |
 	    **Landlord name:**
-      ${landlord.name.full(middle="full")}
+      ${landlord.name_full()}
     show if: landlord_type == "Person"
   - Edit: landlord_company_name
     button: |
@@ -617,7 +617,7 @@ review:
   - Edit: property_manager.name.first
     button: |
 	    **Property manager name:**
-	    ${property_manager.name.full(middle="full")}
+	    ${property_manager.name_full()}
     show if: landlord_has_agent and landlord_type == "Company"
   - Edit: landlord.address.address
     button: |
