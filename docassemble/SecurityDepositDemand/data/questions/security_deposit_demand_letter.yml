@@ -123,7 +123,7 @@ subquestion: |
   * The number of rental units in the property, and
   * The terms of the lease.
 
-  Learn more about [**getting back a security deposit**](https://www.illinoislegalaid.org/legal-information/getting-back-security-deposit).
+  To learn more, see ILAO's guide to [**getting back a security deposit**](https://www.illinoislegalaid.org/node/31156).
 field: sees_nav_bar
 ---
 id: instructions
@@ -137,6 +137,8 @@ subquestion: |
   * The date you moved out,
   * The landlord name and address, and
   * The amount of security deposit you paid and how much was returned, if any.
+
+  To learn more about security deposits, see ILAO's [**Paying a security deposit FAQ**](https://www.illinoislegalaid.org/node/190916).
 
   Set aside 5 to 10 minutes to finish this program. You can log in and save your work to return to later. 
 
@@ -214,11 +216,14 @@ continue button field: wait_45_days
 question: |
   Consider waiting to send letter
 subquestion: |
-  Usually landlords have up to 45 days after a tenant moves out to return a security deposit. 
+  Usually, when a tenant who paid a security deposit moves out, Illinois landlords have:
 
-  You may want to wait until ${ move_out_date.plus(days=45) }, to see if your landlord returns your security deposit. In some areas, waiting 45 days is required.
+  * 30 days to determine if damages need to be repaired, and 
+  * 45 days to return the deposit to the tenant.
 
-  [**Learn more about security deposits**](https://www.illinoislegalaid.org/legal-information/getting-or-returning-security-deposit). 
+  You may want to wait until ${ move_out_date.plus(days=45) }, to see if your landlord returns your security deposit.
+
+  In some towns, you may not need to wait as long. To learn more, see ILAO's [**Using a security deposit for repairs FAQ**](https://www.illinoislegalaid.org/legal-information/using-security-deposit-repairs#howlongafteratenantmovesoutdoesalandlordhavetoreturnthedeposit). 
 ---
 id: rental property address
 question: |
@@ -267,9 +272,7 @@ subquestion: |
   * The number of rental units in the property, and
   * The terms of the lease.
 
-  Also, landlords can take money out of the security deposit for property damage. In some cases, they can take out money for unpaid rent, too.
-
-  [**Learn more about security deposits**](https://www.illinoislegalaid.org/legal-information/getting-or-returning-security-deposit).
+  Also, landlords can take money out of the security deposit for property damage. In some cases, they can take out money for unpaid rent, too. To learn more, see ILAO's [**Using a security deposit for repairs FAQ**](https://www.illinoislegalaid.org/node/190931).
 ---
 id: security deposit returned
 question: |
